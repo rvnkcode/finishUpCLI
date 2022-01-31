@@ -22,6 +22,8 @@ function getToday(): string {
     let mm: string = (dateAndTime.getMonth() + 1).toString(); //Jan = 0
     let dd: string = dateAndTime.getDate().toString();
 
+    console.log(dateAndTime.getUTCDate());
+    
     if (mm.length < 2) {
         mm = `0` + mm;
     }
@@ -36,17 +38,19 @@ function getToday(): string {
 interface Todo {
     bullet: Emblem;
     aim: string;
+    creationDate: string;
 }
 
 class Task implements Todo{
     bullet: Emblem;
     aim: string;
-
+    creationDate: string;
     //todo 나중에는 config 파일에서 설정을 읽어올 수 있게 하면 좋겠음
 
     constructor(goal: string) {
         this.bullet = `•`;
         this.aim = goal;
+        this.creationDate = getToday();
     }
 }
 
