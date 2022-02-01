@@ -2,7 +2,7 @@ import { homedir } from "os";
 import { dirname, normalize } from "path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { question as getUserInput } from "readline-sync";
-import { getToday } from "./cli";
+import { getToday } from "./main";
 
 //todo 나중에는 config 파일에서 설정을 읽어올 수 있게 하면 좋겠음
 type Mark = `•` | `＞` | `〆` | `◯` | `＜` | `−`; //자기가 스스로 특정 '타입'을 만들 수도 있음
@@ -36,9 +36,9 @@ class Task implements Todo {
   creationDate: string;
   isChecked: boolean;
   isPending: boolean;
-  isTask: boolean;
-  isProject: boolean;
-  isNote: boolean;
+  // isTask: boolean;
+  // isProject: boolean;
+  // isNote: boolean;
 
   constructor(goal: string) {
     this._bullet = `•`;

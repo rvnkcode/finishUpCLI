@@ -1,9 +1,11 @@
 {
-  "name": "finishup",
+  "name": "finish-up",
   "version": "0.0.1",
   "description": "A CLI task manager base on node.js",
   "main": "./src/index.js",
-  "bin": "./src/cli.js",
+  "bin": {
+    "fu": "./src/cli.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

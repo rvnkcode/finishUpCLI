@@ -1,29 +1,30 @@
-#!/user/bin/env node
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getToday = void 0;
-var readline_sync_1 = require("readline-sync");
-var task_1 = require("./task");
-function getToday() {
-    var date = new Date();
-    return date.toLocaleDateString("ko-KR");
-}
-exports.getToday = getToday;
-function main() {
-    console.log(getToday());
-    (0, task_1.checkTask)();
-    (0, task_1.promptTask)();
-}
-main();
-(0, readline_sync_1.promptCLLoop)({
-    add: function () {
-        (0, task_1.addTask)();
-        console.log("Task is add to inbox.");
-    },
-    exit: function () {
-        (0, task_1.saveTask)();
-        console.log("good-bye");
-        return true;
-    },
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
 });
-(0, readline_sync_1.keyInPause)((0, task_1.promptTask)());
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var commander_1 = require("commander");
+var pack = __importStar(require("../package.json"));
+var program = new commander_1.Command();
+program
+    .version(pack.version, '-v, --version')
+    .name('fu');
+program
+    .command('add');
+program.parse(process.argv);

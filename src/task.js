@@ -5,7 +5,7 @@ var os_1 = require("os");
 var path_1 = require("path");
 var fs_1 = require("fs");
 var readline_sync_1 = require("readline-sync");
-var cli_1 = require("./cli");
+var main_1 = require("./main");
 var homeDir = (0, os_1.homedir)();
 var path = (0, path_1.normalize)(homeDir + "/documents/finishUp/todo.json");
 var inbox = [];
@@ -13,8 +13,9 @@ var Task = (function () {
     function Task(goal) {
         this._bullet = "\u2022";
         this.aim = goal;
-        this.creationDate = (0, cli_1.getToday)();
+        this.creationDate = (0, main_1.getToday)();
         this.isChecked = false;
+        this.isPending = false;
     }
     return Task;
 }());
