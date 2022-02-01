@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -21,10 +22,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var commander_1 = require("commander");
 var pack = __importStar(require("../package.json"));
+var task_1 = require("./task");
+var main_1 = require("./main");
 var program = new commander_1.Command();
 program
-    .version(pack.version, '-v, --version')
-    .name('fu');
-program
-    .command('add');
+    .version(pack.version, "-v, --version")
+    .name("finish-up")
+    .usage(pack.description)
+    .action(main_1.main);
+program.command("add [task]").description("add new task").action(task_1.addTask);
 program.parse(process.argv);

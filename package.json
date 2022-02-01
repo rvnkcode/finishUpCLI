@@ -1,7 +1,7 @@
 {
   "name": "finish-up",
   "version": "0.0.1",
-  "description": "A CLI task manager base on node.js",
+  "description": "A CLI task manager based on node.js",
   "main": "./src/index.js",
   "bin": {
     "fu": "./src/cli.js"

@@ -9,7 +9,6 @@ function getToday() {
 exports.getToday = getToday;
 function main() {
     console.log(getToday());
-    (0, task_1.checkTask)();
     (0, task_1.promptTask)();
 }
 exports.main = main;

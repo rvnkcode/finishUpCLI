@@ -1,52 +1,69 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.promptTask = exports.checkTask = exports.addTask = exports.saveTask = void 0;
+exports.promptTask = exports.addTask = void 0;
 var os_1 = require("os");
 var path_1 = require("path");
 var fs_1 = require("fs");
-var readline_sync_1 = require("readline-sync");
 var main_1 = require("./main");
 var homeDir = (0, os_1.homedir)();
 var path = (0, path_1.normalize)(homeDir + "/documents/finishUp/todo.json");
 var inbox = [];
 var Task = (function () {
     function Task(goal) {
-        this._bullet = "\u2022";
+        this.bullet = "\u2022";
         this.aim = goal;
         this.creationDate = (0, main_1.getToday)();
-        this.isChecked = false;
-        this.isPending = false;
+        this.done = false;
     }
     return Task;
 }());
-function addTask() {
-    var task = new Task((0, readline_sync_1.question)());
-    inbox.push(task);
+function checkInbox() {
+    return (0, fs_1.existsSync)(path);
 }
-exports.addTask = addTask;
-function saveTask() {
-    (0, fs_1.writeFileSync)(path, JSON.stringify(inbox, null, 2));
+function getInbox() {
+    inbox = JSON.parse((0, fs_1.readFileSync)(path, "utf-8"));
+    return inbox;
 }
-exports.saveTask = saveTask;
-function checkTask() {
-    if ((0, fs_1.existsSync)(path)) {
-        inbox = JSON.parse((0, fs_1.readFileSync)(path, "utf-8"));
+function saveTask(arr) {
+    try {
+        (0, fs_1.writeFileSync)(path, JSON.stringify(arr, null, 2));
+    }
+    catch (error) {
+        if (!checkInbox()) {
+            console.log("\uB514\uB809\uD1A0\uB9AC\uAC00 \uC874\uC7AC\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.");
+        }
+    }
+}
+function makeDirAndFile() {
+    try {
+        (0, fs_1.mkdirSync)((0, path_1.dirname)(path));
+        saveTask(inbox);
+    }
+    catch (error) {
+        saveTask(inbox);
+    }
+}
+function setupInbox() {
+    if (checkInbox()) {
+        inbox = getInbox();
     }
     else {
-        try {
-            (0, fs_1.mkdirSync)((0, path_1.dirname)(path));
-            saveTask();
-        }
-        catch (error) {
-            saveTask();
-        }
+        makeDirAndFile();
     }
 }
-exports.checkTask = checkTask;
+setupInbox();
+function addTask(userInput) {
+    var task = new Task(userInput);
+    inbox.push(task);
+    console.log("Task is added.");
+    saveTask(inbox);
+}
+exports.addTask = addTask;
 function promptTask() {
     if (inbox.length > 0) {
-        for (var i = 0; i < inbox.length; i++) {
-            console.log(inbox[i]._bullet, inbox[i].aim);
+        for (var _i = 0, inbox_1 = inbox; _i < inbox_1.length; _i++) {
+            var tsk = inbox_1[_i];
+            console.log(tsk.bullet, tsk.aim);
         }
     }
     else {
