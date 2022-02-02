@@ -30,5 +30,9 @@ program
     .name("finish-up")
     .usage(pack.description)
     .action(main_1.main);
-program.command("add [task]").description("add new task").action(task_1.addTask);
+program.command("add <task>").description("add new task").action(task_1.addTask);
+program
+    .command("del <id>")
+    .description("delete task or note")
+    .action(task_1.searchTaskById);
 program.parse(process.argv);

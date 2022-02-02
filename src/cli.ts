@@ -4,7 +4,7 @@
 
 import { Command } from "commander";
 import * as pack from "../package.json";
-import { addTask } from "./task";
+import { addTask, searchTaskById } from "./task";
 import { main } from "./main";
 
 const program: Command = new Command();
@@ -15,9 +15,10 @@ program
   .usage(pack.description)
   .action(main);
 
-program.command(`add [task]`).description(`add new task`).action(addTask);
-program.command(`del [id]`).description(`delete task or note`).action(id{
-  
-})
+program.command(`add <task>`).description(`add new task`).action(addTask);
+program
+  .command(`del <id>`)
+  .description(`delete task or note`)
+  .action(searchTaskById);
 
 program.parse(process.argv);

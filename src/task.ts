@@ -19,14 +19,27 @@ interface Todo {
 }
 
 class Task implements Todo {
-  id: number;
+  get id(): number {
+    return this._id;
+  }
+
+  set id(value: number) {
+    for (let idx of inbox) {
+      if (idx._id === value) {
+        this._id = value + 1;
+        value++;
+      }
+    }
+  }
+
+  private _id: number;
   bullet: Mark;
   aim: string;
   creationDate: string;
   done: boolean;
 
   constructor(goal: string) {
-    this.id = 0;
+    this._id = 1;
     this.bullet = `•`;
     this.aim = goal;
     this.creationDate = getToday();
@@ -84,11 +97,28 @@ function promptTask(): void {
   if (inbox.length > 0) {
     //아 대박 멍청이 타스/자스에서 같다는 ==지요?
     for (let tsk of inbox) {
-      console.log(tsk.bullet, tsk.aim);
+      console.log(tsk._id, tsk.bullet, tsk.aim);
     }
   } else {
     console.log(`There is no task any.`);
   }
 }
 
-export { addTask, promptTask };
+function delTask(id: number): void {
+  inbox.splice(id, 1);
+  console.log(`The item is deleted.`);
+  saveTask(inbox);
+}
+
+function searchTaskById(id: string): void {
+  let idNumber: number = parseInt(id); //콘솔 인풋은 스트링타입이기 때문에 int 로 변환이 필요함
+  for (let idx of inbox) {
+    if (idNumber === idx._id) {
+      idNumber = inbox.indexOf(idx);
+      delTask(idNumber);
+      break;
+    }
+  }
+}
+
+export { addTask, promptTask, searchTaskById };

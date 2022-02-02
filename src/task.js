@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.promptTask = exports.addTask = void 0;
+exports.searchTaskById = exports.promptTask = exports.addTask = void 0;
 var os_1 = require("os");
 var path_1 = require("path");
 var fs_1 = require("fs");
@@ -10,11 +10,28 @@ var path = (0, path_1.normalize)(homeDir + "/documents/finishUp/todo.json");
 var inbox = [];
 var Task = (function () {
     function Task(goal) {
+        this._id = 1;
         this.bullet = "\u2022";
         this.aim = goal;
         this.creationDate = (0, main_1.getToday)();
         this.done = false;
     }
+    Object.defineProperty(Task.prototype, "id", {
+        get: function () {
+            return this._id;
+        },
+        set: function (value) {
+            for (var _i = 0, inbox_1 = inbox; _i < inbox_1.length; _i++) {
+                var idx = inbox_1[_i];
+                if (idx._id === value) {
+                    this._id = value + 1;
+                    value++;
+                }
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
     return Task;
 }());
 function checkInbox() {
@@ -54,6 +71,7 @@ function setupInbox() {
 setupInbox();
 function addTask(userInput) {
     var task = new Task(userInput);
+    task.id = inbox.length + 1;
     inbox.push(task);
     console.log("Task is added.");
     saveTask(inbox);
@@ -61,9 +79,9 @@ function addTask(userInput) {
 exports.addTask = addTask;
 function promptTask() {
     if (inbox.length > 0) {
-        for (var _i = 0, inbox_1 = inbox; _i < inbox_1.length; _i++) {
-            var tsk = inbox_1[_i];
-            console.log(tsk.bullet, tsk.aim);
+        for (var _i = 0, inbox_2 = inbox; _i < inbox_2.length; _i++) {
+            var tsk = inbox_2[_i];
+            console.log(tsk._id, tsk.bullet, tsk.aim);
         }
     }
     else {
@@ -71,3 +89,21 @@ function promptTask() {
     }
 }
 exports.promptTask = promptTask;
+function delTask(id) {
+    inbox.splice(id, 1);
+    console.log("The item is deleted.");
+    saveTask(inbox);
+}
+function searchTaskById(id) {
+    var idNumber = parseInt(id);
+    for (var _i = 0, inbox_3 = inbox; _i < inbox_3.length; _i++) {
+        var idx = inbox_3[_i];
+        if (idNumber === idx._id) {
+            idNumber = inbox.indexOf(idx);
+            delTask(idNumber);
+            break;
+        }
+    }
+}
+exports.searchTaskById = searchTaskById;
+addTask(`asdf`);
