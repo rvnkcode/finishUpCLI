@@ -16,5 +16,8 @@ program
   .action(main);
 
 program.command(`add [task]`).description(`add new task`).action(addTask);
+program.command(`del [id]`).description(`delete task or note`).action(id{
+  
+})
 
 program.parse(process.argv);

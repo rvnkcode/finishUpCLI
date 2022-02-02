@@ -13,17 +13,20 @@ let inbox: any[] = []; //todo 배열보다 나은 방법이 있는 것은 아닌
 /*Interfaces define "public contracts",
 it describes the public side of the class and as such it doesn't make sense to have private access modifier.*/
 interface Todo {
-  //bullet: Mark;
+  bullet: Mark;
   aim: string;
+  creationDate?: string;
 }
 
 class Task implements Todo {
+  id: number;
   bullet: Mark;
   aim: string;
   creationDate: string;
   done: boolean;
 
   constructor(goal: string) {
+    this.id = 0;
     this.bullet = `•`;
     this.aim = goal;
     this.creationDate = getToday();
@@ -71,6 +74,7 @@ setupInbox();
 
 function addTask(userInput: string): void {
   const task = new Task(userInput);
+  task.id = inbox.length + 1;
   inbox.push(task);
   console.log(`Task is added.`);
   saveTask(inbox);
