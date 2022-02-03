@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { getToday } from "./main";
 
 //todo 나중에는 config 파일에서 설정을 읽어올 수 있게 하면 좋겠음
-type Mark = `•` | `＞` | `〆` | `◯` | `＜` | `−`; //자기가 스스로 특정 '타입'을 만들 수도 있음
+type Mark = `[ ]` | `[>]` | `[X]` | `[O]` | `[<]` | `[-]`; //자기가 스스로 특정 '타입'을 만들 수도 있음
 
 const homeDir: string = homedir(); //크로스플랫폼(일단 맥, 윈도우즈 대응)을 위해 normalize 사용
 let path: string = normalize(homeDir + "/documents/finishUp/todo.json"); //todo:나중엔 config 파일에서 설정치를 읽어오도록 바꾸고 싶음
@@ -12,23 +12,27 @@ let inbox: any[] = []; //todo 배열보다 나은 방법이 있는 것은 아닌
 
 /*Interfaces define "public contracts",
 it describes the public side of the class and as such it doesn't make sense to have private access modifier.*/
-interface Todo {
-  bullet: Mark;
+interface Item {
+  //bullet: Mark;
   aim: string;
   creationDate?: string;
 }
 
-class Task implements Todo {
+class Task implements Item {
   get id(): number {
     return this._id;
   }
 
   set id(value: number) {
-    for (let idx of inbox) {
-      if (idx._id === value) {
-        this._id = value + 1;
-        value++;
-      }
+    let idArr: number[] = [];
+    for (let i of inbox) {
+      idArr.push(i._id);
+    }
+    let max = Math.max(...idArr); //todo: 왜 ...이 들어가지?
+    if (max < value) {
+      this._id = value;
+    } else {
+      this._id = max + 1;
     }
   }
 
@@ -36,14 +40,12 @@ class Task implements Todo {
   bullet: Mark;
   aim: string;
   creationDate: string;
-  done: boolean;
 
   constructor(goal: string) {
     this._id = 1;
-    this.bullet = `•`;
+    this.bullet = `[ ]`;
     this.aim = goal;
     this.creationDate = getToday();
-    this.done = false;
   }
 }
 
@@ -56,9 +58,9 @@ function getInbox() {
   return inbox;
 }
 
-function saveTask(arr: any): void {
+function exportToJson(listOfTask: any): void {
   try {
-    writeFileSync(path, JSON.stringify(arr, null, 2));
+    writeFileSync(path, JSON.stringify(listOfTask, null, 2));
   } catch (error) {
     if (!checkInbox()) {
       console.log(`디렉토리가 존재하지 않습니다.`);
@@ -69,9 +71,9 @@ function saveTask(arr: any): void {
 function makeDirAndFile() {
   try {
     mkdirSync(dirname(path));
-    saveTask(inbox);
+    exportToJson(inbox);
   } catch (error) {
-    saveTask(inbox);
+    exportToJson(inbox);
   }
 }
 
@@ -89,8 +91,8 @@ function addTask(userInput: string): void {
   const task = new Task(userInput);
   task.id = inbox.length + 1;
   inbox.push(task);
-  console.log(`Task is added.`);
-  saveTask(inbox);
+  exportToJson(inbox);
+  console.log(`added.`);
 }
 
 function promptTask(): void {
@@ -104,21 +106,34 @@ function promptTask(): void {
   }
 }
 
-function delTask(id: number): void {
-  inbox.splice(id, 1);
-  console.log(`The item is deleted.`);
-  saveTask(inbox);
+function getIndexById(id: string): number {
+  return inbox.findIndex((element) => element._id === parseInt(id));
 }
 
-function searchTaskById(id: string): void {
-  let idNumber: number = parseInt(id); //콘솔 인풋은 스트링타입이기 때문에 int 로 변환이 필요함
-  for (let idx of inbox) {
-    if (idNumber === idx._id) {
-      idNumber = inbox.indexOf(idx);
-      delTask(idNumber);
-      break;
-    }
-  }
+function checkId(userInput: string): boolean {
+  return getIndexById(userInput) > -1;
 }
 
-export { addTask, promptTask, searchTaskById };
+function delTask(userInput: string): void {
+  if (checkId(userInput)) {
+    inbox.splice(getIndexById(userInput), 1); //id 번부터 '1'개를 지움
+    exportToJson(inbox);
+    console.log(`deleted.`);
+  } else console.log(`ERROR.`);
+}
+
+function doneTask(userInput: string): void {
+  if (checkId(userInput)) {
+    inbox[getIndexById(userInput)].bullet = `[X]`;
+    exportToJson(inbox);
+    console.log(`checked.`);
+  } else console.log(`ERROR`);
+}
+
+function clearInbox(): void {
+  inbox = [];
+  exportToJson(inbox);
+  console.log(`cleared.`);
+}
+
+export { addTask, promptTask, delTask, doneTask, clearInbox };

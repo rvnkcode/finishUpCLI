@@ -27,12 +27,12 @@ var main_1 = require("./main");
 var program = new commander_1.Command();
 program
     .version(pack.version, "-v, --version")
-    .name("finish-up")
-    .usage(pack.description)
+    .name("fu")
+    .description(pack.description)
+    .usage("<command> <argument>")
     .action(main_1.main);
 program.command("add <task>").description("add new task").action(task_1.addTask);
-program
-    .command("del <id>")
-    .description("delete task or note")
-    .action(task_1.searchTaskById);
+program.command("del <id>").description("delete task or note").action(task_1.delTask);
+program.command("done <id>").description("done task").action(task_1.doneTask);
+program.command("clear").description("clear all items").action(task_1.clearInbox);
 program.parse(process.argv);

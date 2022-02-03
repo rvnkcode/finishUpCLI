@@ -4,21 +4,21 @@
 
 import { Command } from "commander";
 import * as pack from "../package.json";
-import { addTask, searchTaskById } from "./task";
+import { addTask, clearInbox, delTask, doneTask } from "./task";
 import { main } from "./main";
 
 const program: Command = new Command();
 
 program
   .version(pack.version, `-v, --version`)
-  .name(`finish-up`)
-  .usage(pack.description)
+  .name(`fu`)
+  .description(pack.description)
+  .usage(`<command> <argument>`)
   .action(main);
 
 program.command(`add <task>`).description(`add new task`).action(addTask);
-program
-  .command(`del <id>`)
-  .description(`delete task or note`)
-  .action(searchTaskById);
+program.command(`del <id>`).description(`delete task or note`).action(delTask);
+program.command(`done <id>`).description(`done task`).action(doneTask);
+program.command(`clear`).description(`clear all items`).action(clearInbox);
 
 program.parse(process.argv);
