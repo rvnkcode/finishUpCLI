@@ -2,6 +2,7 @@ import { homedir } from "os";
 import { dirname, normalize } from "path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { getToday } from "./main";
+import * as inquirer from "inquirer";
 
 //todo 나중에는 config 파일에서 설정을 읽어올 수 있게 하면 좋겠음
 type Mark = `[ ]` | `[>]` | `[X]` | `[O]` | `[<]` | `[-]`; //자기가 스스로 특정 '타입'을 만들 수도 있음
@@ -92,7 +93,7 @@ function addTask(userInput: string): void {
   task.id = inbox.length + 1;
   inbox.push(task);
   exportToJson(inbox);
-  console.log(`added.`);
+  console.log(`added`);
 }
 
 function promptTask(): void {
@@ -110,6 +111,10 @@ function getIndexById(id: string): number {
   return inbox.findIndex((element) => element._id === parseInt(id));
 }
 
+function getIndexByBody(input: string): number {
+  return inbox.findIndex((element) => element.aim === input);
+}
+
 function checkId(userInput: string): boolean {
   return getIndexById(userInput) > -1;
 }
@@ -118,22 +123,51 @@ function delTask(userInput: string): void {
   if (checkId(userInput)) {
     inbox.splice(getIndexById(userInput), 1); //id 번부터 '1'개를 지움
     exportToJson(inbox);
-    console.log(`deleted.`);
-  } else console.log(`ERROR.`);
+    console.log(`deleted`);
+  } else console.log(`ERROR`);
 }
 
 function doneTask(userInput: string): void {
   if (checkId(userInput)) {
     inbox[getIndexById(userInput)].bullet = `[X]`;
     exportToJson(inbox);
-    console.log(`checked.`);
+    console.log(`checked`);
   } else console.log(`ERROR`);
 }
 
 function clearInbox(): void {
   inbox = [];
   exportToJson(inbox);
-  console.log(`cleared.`);
+  console.log(`cleared`);
 }
 
-export { addTask, promptTask, delTask, doneTask, clearInbox };
+function modifyItem(): void {
+  if (inbox.length > 0) {
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "item",
+          message: "Choose item to modify",
+          choices: inbox.map((item) => item.aim), //배열 내 각 <item>마다 <item.aim>을 반환함
+        },
+      ])
+      .then((selection) => {
+        const idx = getIndexByBody(selection.item);
+        inquirer
+          .prompt([
+            {
+              type: "input",
+              name: "content",
+            },
+          ])
+          .then((input) => {
+            inbox[idx].aim = input.content;
+            exportToJson(inbox);
+            console.log(`modified`);
+          });
+      });
+  } else console.log(`inbox is empty`);
+}
+
+export { addTask, promptTask, delTask, doneTask, clearInbox, modifyItem };

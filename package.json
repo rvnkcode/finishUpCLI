@@ -1,6 +1,6 @@
 {
   "name": "finish-up",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A CLI task manager based on node.js",
   "main": "./src/index.js",
   "bin": {
@@ -13,11 +13,13 @@
   "author": "melonK",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^5.0.0",
     "commander": "^9.0.0",
-    "enquirer": "^2.3.6",
+    "inquirer": "^8.2.0",
     "readline-sync": "^1.4.10"
   },
   "devDependencies": {
+    "@types/inquirer": "^8.2.0",
     "@types/node": "^17.0.12",
     "@types/readline-sync": "^1.4.4",
     "prettier": "^2.5.1",

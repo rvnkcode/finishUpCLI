@@ -31,8 +31,15 @@ program
     .description(pack.description)
     .usage("<command> <argument>")
     .action(main_1.main);
-program.command("add <task>").description("add new task").action(task_1.addTask);
-program.command("del <id>").description("delete task or note").action(task_1.delTask);
-program.command("done <id>").description("done task").action(task_1.doneTask);
-program.command("clear").description("clear all items").action(task_1.clearInbox);
+program.command("add <text>").description("add new task").action(task_1.addTask);
+program
+    .command("del <number>")
+    .description("delete task or note")
+    .action(task_1.delTask);
+program.command("done <number>").description("done task").action(task_1.doneTask);
+program
+    .command("clear")
+    .description("clear all items in inbox")
+    .action(task_1.clearInbox);
+program.command("mod").description("modify selected item").action(task_1.modifyItem);
 program.parse(process.argv);

@@ -4,7 +4,7 @@
 
 import { Command } from "commander";
 import * as pack from "../package.json";
-import { addTask, clearInbox, delTask, doneTask } from "./task";
+import { addTask, clearInbox, delTask, doneTask, modifyItem } from "./task";
 import { main } from "./main";
 
 const program: Command = new Command();
@@ -16,9 +16,16 @@ program
   .usage(`<command> <argument>`)
   .action(main);
 
-program.command(`add <task>`).description(`add new task`).action(addTask);
-program.command(`del <id>`).description(`delete task or note`).action(delTask);
-program.command(`done <id>`).description(`done task`).action(doneTask);
-program.command(`clear`).description(`clear all items`).action(clearInbox);
+program.command(`add <text>`).description(`add new task`).action(addTask);
+program
+  .command(`del <number>`)
+  .description(`delete task or note`)
+  .action(delTask);
+program.command(`done <number>`).description(`done task`).action(doneTask);
+program
+  .command(`clear`)
+  .description(`clear all items in inbox`)
+  .action(clearInbox);
+program.command(`mod`).description(`modify selected item`).action(modifyItem);
 
 program.parse(process.argv);
