@@ -109,3 +109,10 @@ dist
 node_modules
 src/tempCodeRunnerFile.ts
 .vscode
+
+# vim files
+*.swp
+
+# test or scratch files
+src/test.js
+src/test.ts
