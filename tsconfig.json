@@ -4,7 +4,6 @@
         "moduleResolution": "Node",
         "target": "ES5",
         "sourceMap": false,
-        //여기서부터 내가 추가한 설정들
         "allowJs": true,
         "checkJs": true,
         "strict": true,
@@ -13,8 +12,6 @@
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
         "removeComments": true,
-        //"outDir": "./js"
-        //package.json 의 정보를 읽어오기 위한 설정:버전, 이름 정보 등
         "resolveJsonModule": true,
         "esModuleInterop": true
     },
