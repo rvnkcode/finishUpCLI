@@ -12,7 +12,7 @@ interface Item {
   creationDate?: string;
 }
 
-class Task implements Item {
+class Note implements Item {
   get id(): number {
     return this._id;
   }
@@ -30,22 +30,34 @@ class Task implements Item {
     }
   }
 
-  private _id: number;
+  protected _id: number;
   bullet: Mark;
   text: string;
-  creationDate: string;
+  readonly creationDate: string;
 
   constructor(userInput: string) {
     this._id = 1;
-    this.bullet = `[ ]`;
+    this.bullet = `[-]`;
     this.text = userInput;
     this.creationDate = getToday();
   }
 }
 
-class Note extends Task {
-  super() {
-    this.bullet = `[-]`;
+class Task extends Note {
+  
+  isDoing: boolean;
+  isDone: boolean;
+  project: string;
+  dueDate: string;
+
+  constructor(userInput: string) {
+    super(userInput); // super()로 상위 컨스트럭터를 호출해야만 오버라이딩 할 수 있음
+    
+    this.bullet = `[ ]`;
+    this.isDoing = false;
+    this.isDone = false;
+    this.project = ``;
+    this.dueDate = ``;
   }
 }
 

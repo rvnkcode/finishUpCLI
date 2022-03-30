@@ -18,14 +18,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Note = exports.Task = void 0;
 var main_1 = require("./main");
 var inbox_1 = require("./inbox");
-var Task = (function () {
-    function Task(userInput) {
+var Note = (function () {
+    function Note(userInput) {
         this._id = 1;
-        this.bullet = "[ ]";
+        this.bullet = "[-]";
         this.text = userInput;
         this.creationDate = (0, main_1.getToday)();
     }
-    Object.defineProperty(Task.prototype, "id", {
+    Object.defineProperty(Note.prototype, "id", {
         get: function () {
             return this._id;
         },
@@ -46,17 +46,20 @@ var Task = (function () {
         enumerable: false,
         configurable: true
     });
-    return Task;
-}());
-exports.Task = Task;
-var Note = (function (_super) {
-    __extends(Note, _super);
-    function Note() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Note.prototype.super = function () {
-        this.bullet = "[-]";
-    };
     return Note;
-}(Task));
+}());
 exports.Note = Note;
+var Task = (function (_super) {
+    __extends(Task, _super);
+    function Task(userInput) {
+        var _this = _super.call(this, userInput) || this;
+        _this.bullet = "[ ]";
+        _this.isDoing = false;
+        _this.isDone = false;
+        _this.project = "";
+        _this.dueDate = "";
+        return _this;
+    }
+    return Task;
+}(Note));
+exports.Task = Task;

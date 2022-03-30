@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setUpInbox = exports.modifyItem = exports.clearInbox = exports.doneTask = exports.delTask = exports.promptTask = exports.addItem = exports.inbox = void 0;
+exports.doTask = exports.setUpInbox = exports.modifyItem = exports.clearInbox = exports.doneTask = exports.delItem = exports.promptItem = exports.addItem = exports.inbox = void 0;
 var os_1 = require("os");
 var path_1 = require("path");
 var fs_1 = require("fs");
@@ -67,15 +67,22 @@ function setUpInbox() {
     return inbox;
 }
 exports.setUpInbox = setUpInbox;
+function clearInbox() {
+    exports.inbox = inbox = [];
+    exportToJson(inbox);
+    console.log("cleared");
+}
+exports.clearInbox = clearInbox;
 exports.inbox = inbox = setUpInbox();
 function addItem(userInput, isNote) {
     var item;
     if (isNote) {
         item = new item_1.Note(userInput);
-        console.log(isNote);
+        console.log("note!");
     }
     else {
         item = new item_1.Task(userInput);
+        console.log("task!");
     }
     item.id = inbox.length + 1;
     inbox.push(item);
@@ -83,7 +90,7 @@ function addItem(userInput, isNote) {
     console.log("Item added successfully");
 }
 exports.addItem = addItem;
-function promptTask() {
+function promptItem() {
     if (inbox.length > 0) {
         for (var _i = 0, inbox_1 = inbox; _i < inbox_1.length; _i++) {
             var itm = inbox_1[_i];
@@ -94,42 +101,27 @@ function promptTask() {
         console.log("There is no task any.");
     }
 }
-exports.promptTask = promptTask;
+exports.promptItem = promptItem;
 function getIndexById(id) {
     return inbox.findIndex(function (element) { return element._id === parseInt(id); });
 }
 function getIndexByBody(input) {
     return inbox.findIndex(function (element) { return element.body === input; });
 }
-function checkId(userInput) {
-    return getIndexById(userInput) > -1;
+function checkId(id) {
+    return id > -1;
 }
-function delTask(userInput) {
-    if (checkId(userInput)) {
-        inbox.splice(getIndexById(userInput), 1);
+function delItem(userInput) {
+    var id = getIndexById(userInput);
+    if (checkId(id)) {
+        inbox.splice(id, 1);
         exportToJson(inbox);
         console.log("deleted");
     }
     else
         console.log("ERROR");
 }
-exports.delTask = delTask;
-function doneTask(userInput) {
-    if (checkId(userInput)) {
-        inbox[getIndexById(userInput)].bullet = "[X]";
-        exportToJson(inbox);
-        console.log("checked");
-    }
-    else
-        console.log("ERROR");
-}
-exports.doneTask = doneTask;
-function clearInbox() {
-    exports.inbox = inbox = [];
-    exportToJson(inbox);
-    console.log("cleared");
-}
-exports.clearInbox = clearInbox;
+exports.delItem = delItem;
 function modifyItem() {
     if (inbox.length > 0) {
         inquirer
@@ -161,3 +153,39 @@ function modifyItem() {
         console.log("inbox is empty");
 }
 exports.modifyItem = modifyItem;
+function isTask(id) {
+    if (inbox[id].bullet != "[-]") {
+        return true;
+    }
+    else
+        return false;
+}
+function isExistTask(id) {
+    if (checkId(id) && isTask(id)) {
+        return true;
+    }
+    else
+        return false;
+}
+function doTask(userInput) {
+    var id = getIndexById(userInput);
+    if (isExistTask(id)) {
+        inbox[id].bullet = "[>]";
+        exportToJson(inbox);
+        console.log("checked");
+    }
+    else
+        console.error("ERROR");
+}
+exports.doTask = doTask;
+function doneTask(userInput) {
+    var id = getIndexById(userInput);
+    if (isExistTask(id)) {
+        inbox[id].bullet = "[X]";
+        exportToJson(inbox);
+        console.log("checked");
+    }
+    else
+        console.error("ERROR");
+}
+exports.doneTask = doneTask;

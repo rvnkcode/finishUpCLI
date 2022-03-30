@@ -8,6 +8,7 @@ const homeDir: string = homedir(); //크로스플랫폼(일단 맥, 윈도우즈
 let path: string = normalize(homeDir + "/.finishUp/todo.json"); //TODO:나중엔 config 파일에서 설정치를 읽어오도록 바꾸고 싶음
 let inbox: any[] = []; //todo 배열보다 나은 방법이 있는 것은 아닌지? `any`로 하는 수밖에 없음? 배열 안 오브젝트 요소에 액세스하려면??왜??
 
+// dealing with inbox
 function checkInbox(): boolean {
   return existsSync(path);
 }
@@ -37,11 +38,6 @@ function makeDirAndFile(inbox: any) {
 }
 
 function setUpInbox(): any {
-  // if (checkInbox()) {
-  //   inbox = getInbox();
-  // } else {
-  //   makeDirAndFile(); //inbox still [];
-  // }
   if (checkInbox() == false) {
     makeDirAndFile(inbox);
   }
@@ -49,16 +45,23 @@ function setUpInbox(): any {
   return inbox;
 }
 
-inbox = setUpInbox();
-// setUpInbox();
+function clearInbox(): void {
+  inbox = [];
+  exportToJson(inbox);
+  console.log(`cleared`);
+}
 
-function addItem(userInput: string, isNote?: any): void {
+inbox = setUpInbox(); // inbox 초기화
+
+//dealing with item(task or not: method for everything)
+function addItem(userInput: string, isNote?: boolean): void {
   let item: any;
   if (isNote) {
     item = new Note(userInput);
-    console.log(isNote);
+    console.log(`note!`);
   } else {
     item = new Task(userInput);
+    console.log(`task!`);
   }
   item.id = inbox.length + 1;
   inbox.push(item);
@@ -66,7 +69,7 @@ function addItem(userInput: string, isNote?: any): void {
   console.log(`Item added successfully`);
 }
 
-function promptTask(): void {
+function promptItem(): void {
   if (inbox.length > 0) {
     //아 대박 멍청이 타스/자스에서 같다는 ==지요?
     for (let itm of inbox) {
@@ -85,30 +88,17 @@ function getIndexByBody(input: string): number {
   return inbox.findIndex((element) => element.body === input);
 }
 
-function checkId(userInput: string): boolean {
-  return getIndexById(userInput) > -1;
+function checkId(id: number): boolean {
+  return id > -1;
 }
 
-function delTask(userInput: string): void {
-  if (checkId(userInput)) {
-    inbox.splice(getIndexById(userInput), 1); //id 번부터 '1'개를 지움
+function delItem(userInput: string): void {
+  let id = getIndexById(userInput)
+  if (checkId(id)) {
+    inbox.splice(id, 1); //id 번부터 '1'개를 지움
     exportToJson(inbox);
     console.log(`deleted`);
   } else console.log(`ERROR`);
-}
-
-function doneTask(userInput: string): void {
-  if (checkId(userInput)) {
-    inbox[getIndexById(userInput)].bullet = `[X]`;
-    exportToJson(inbox);
-    console.log(`checked`);
-  } else console.log(`ERROR`);
-}
-
-function clearInbox(): void {
-  inbox = [];
-  exportToJson(inbox);
-  console.log(`cleared`);
 }
 
 function modifyItem(): void {
@@ -140,14 +130,51 @@ function modifyItem(): void {
   } else console.log(`inbox is empty`);
 }
 
+// for task only
+function isTask(id: number): boolean {
+  if (inbox[id].bullet != `[-]`) {
+    //if (inbox[id].constructor.name == `Task`) { // it returns `object`
+    return true;
+  } else return false;
+}
+
+function isExistTask(id: number):boolean {
+  if (checkId(id) && isTask(id)) {
+    return true;
+  } else return false;
+}
+
+function doTask(userInput: string): void {
+  let id: number = getIndexById(userInput);
+  if (isExistTask(id)) {
+    inbox[id].bullet = `[>]`;
+    exportToJson(inbox);
+    console.log(`checked`);
+  } else console.error(`ERROR`);
+}
+
+function doneTask(userInput: string): void {
+  let id: number = getIndexById(userInput);
+  if (isExistTask(id)) {
+    inbox[id].bullet = `[X]`;
+    exportToJson(inbox);
+    console.log(`checked`);
+  } else console.error(`ERROR`);
+}
+
+// function testfn(id: string): void {
+//   console.log(inbox[getIndexById(id)].constructor.name);
+// }
+
 export {
   inbox,
   addItem,
-  promptTask,
-  delTask,
+  promptItem,
+  delItem,
   doneTask,
   clearInbox,
   modifyItem,
   setUpInbox,
+  doTask
+  //  testfn,
 };
-

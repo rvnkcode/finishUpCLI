@@ -9,12 +9,6 @@ function getToday() {
 exports.getToday = getToday;
 function main() {
     console.log(getToday());
-    try {
-        (0, inbox_1.setUpInbox)();
-    }
-    catch (error) {
-        console.error("Failed to get the list.");
-    }
-    (0, inbox_1.promptTask)();
+    (0, inbox_1.promptItem)();
 }
 exports.main = main;

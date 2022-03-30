@@ -36,14 +36,23 @@ program
     .usage("<command> <argument>")
     .action(main_1.main);
 program
-    .command("add <text>")
-    .option("-n, --note", "add new note instead of task", false)
+    .command("add")
+    .argument("<text>", "add new items to inbox.")
+    .option("-n, --note", "add new note instead of task")
     .description("add new task or note. If you wanna type some sentence, you should put them between single quote.('')")
-    .action(inbox_1.addItem);
+    .action(function (text, options) {
+    if (options.note) {
+        (0, inbox_1.addItem)(text, true);
+    }
+    else {
+        (0, inbox_1.addItem)(text, false);
+    }
+});
 program
     .command("del <id>")
     .description("delete item by its id")
-    .action(inbox_1.delTask);
+    .action(inbox_1.delItem);
+program.command("do <id>").description("check task by its id").action(inbox_1.doTask);
 program
     .command("done <id>")
     .description("check task by its id")
