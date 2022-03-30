@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.main = exports.getToday = void 0;
-var task_1 = require("./task");
+var inbox_1 = require("./inbox");
 function getToday() {
     var date = new Date();
     return date.toLocaleDateString("ko-KR");
@@ -9,6 +9,12 @@ function getToday() {
 exports.getToday = getToday;
 function main() {
     console.log(getToday());
-    (0, task_1.promptTask)();
+    try {
+        (0, inbox_1.setUpInbox)();
+    }
+    catch (error) {
+        console.error("Failed to get the list.");
+    }
+    (0, inbox_1.promptTask)();
 }
 exports.main = main;

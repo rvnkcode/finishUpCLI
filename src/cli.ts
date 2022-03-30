@@ -4,7 +4,7 @@
 
 import { Command } from "commander";
 import * as pack from "../package.json";
-import { addTask, clearInbox, delTask, doneTask, modifyItem } from "./task";
+import { addItem, clearInbox, delTask, doneTask, modifyItem } from "./inbox";
 import { main } from "./main";
 
 const program: Command = new Command();
@@ -16,16 +16,24 @@ program
   .usage(`<command> <argument>`)
   .action(main);
 
-program.command(`add <text>`).description(`add new task`).action(addTask);
 program
-  .command(`del <number>`)
-  .description(`delete task or note`)
+  .command(`add <text>`)
+  .option(`-n, --note`, `add new note instead of task`, false)
+  .description(`add new task or note. If you wanna type some sentence, you should put them between single quote.('')`)
+  .action(addItem);
+program
+  .command(`del <id>`)
+  .description(`delete item by its id`)
   .action(delTask);
-program.command(`done <number>`).description(`done task`).action(doneTask);
+program
+  .command(`done <id>`)
+  .description(`check task by its id`)
+  .action(doneTask);
 program
   .command(`clear`)
   .description(`clear all items in inbox`)
   .action(clearInbox);
+//TODO: mod <id>로 id를 넣으면 해당 아이템을 수정하게 했으면 좋겠고 아니면 선택형으로 대화형 프롬포트가 나왔으면 좋겠음
 program.command(`mod`).description(`modify selected item`).action(modifyItem);
 
 program.parse(process.argv);

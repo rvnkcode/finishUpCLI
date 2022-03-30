@@ -1,60 +1,18 @@
 import { homedir } from "os";
 import { dirname, normalize } from "path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { getToday } from "./main";
+import { Task, Note } from "./item";
 import * as inquirer from "inquirer";
 
-//todo 나중에는 config 파일에서 설정을 읽어올 수 있게 하면 좋겠음
-type Mark = `[ ]` | `[>]` | `[X]` | `[O]` | `[<]` | `[-]`; //자기가 스스로 특정 '타입'을 만들 수도 있음
-
 const homeDir: string = homedir(); //크로스플랫폼(일단 맥, 윈도우즈 대응)을 위해 normalize 사용
-let path: string = normalize(homeDir + "/documents/finishUp/todo.json"); //todo:나중엔 config 파일에서 설정치를 읽어오도록 바꾸고 싶음
+let path: string = normalize(homeDir + "/.finishUp/todo.json"); //TODO:나중엔 config 파일에서 설정치를 읽어오도록 바꾸고 싶음
 let inbox: any[] = []; //todo 배열보다 나은 방법이 있는 것은 아닌지? `any`로 하는 수밖에 없음? 배열 안 오브젝트 요소에 액세스하려면??왜??
-
-/*Interfaces define "public contracts",
-it describes the public side of the class and as such it doesn't make sense to have private access modifier.*/
-interface Item {
-  //bullet: Mark;
-  aim: string;
-  creationDate?: string;
-}
-
-class Task implements Item {
-  get id(): number {
-    return this._id;
-  }
-
-  set id(value: number) {
-    let idArr: number[] = [];
-    for (let i of inbox) {
-      idArr.push(i._id);
-    }
-    let max = Math.max(...idArr); //todo: 왜 ...이 들어가지?
-    if (max < value) {
-      this._id = value;
-    } else {
-      this._id = max + 1;
-    }
-  }
-
-  private _id: number;
-  bullet: Mark;
-  aim: string;
-  creationDate: string;
-
-  constructor(goal: string) {
-    this._id = 1;
-    this.bullet = `[ ]`;
-    this.aim = goal;
-    this.creationDate = getToday();
-  }
-}
 
 function checkInbox(): boolean {
   return existsSync(path);
 }
 
-function getInbox() {
+function getInbox(inbox: any) {
   inbox = JSON.parse(readFileSync(path, "utf-8"));
   return inbox;
 }
@@ -64,12 +22,12 @@ function exportToJson(listOfTask: any): void {
     writeFileSync(path, JSON.stringify(listOfTask, null, 2));
   } catch (error) {
     if (!checkInbox()) {
-      console.log(`디렉토리가 존재하지 않습니다.`);
+      console.log(`ERROR:디렉토리가 존재하지 않습니다.`);
     }
   }
 }
 
-function makeDirAndFile() {
+function makeDirAndFile(inbox: any) {
   try {
     mkdirSync(dirname(path));
     exportToJson(inbox);
@@ -78,29 +36,41 @@ function makeDirAndFile() {
   }
 }
 
-function setupInbox(): void {
-  if (checkInbox()) {
-    inbox = getInbox();
-  } else {
-    makeDirAndFile(); //inbox still [];
+function setUpInbox(): any {
+  // if (checkInbox()) {
+  //   inbox = getInbox();
+  // } else {
+  //   makeDirAndFile(); //inbox still [];
+  // }
+  if (checkInbox() == false) {
+    makeDirAndFile(inbox);
   }
+  inbox = getInbox(inbox);
+  return inbox;
 }
 
-setupInbox();
+inbox = setUpInbox();
+// setUpInbox();
 
-function addTask(userInput: string): void {
-  const task = new Task(userInput);
-  task.id = inbox.length + 1;
-  inbox.push(task);
+function addItem(userInput: string, isNote?: any): void {
+  let item: any;
+  if (isNote) {
+    item = new Note(userInput);
+    console.log(isNote);
+  } else {
+    item = new Task(userInput);
+  }
+  item.id = inbox.length + 1;
+  inbox.push(item);
   exportToJson(inbox);
-  console.log(`added`);
+  console.log(`Item added successfully`);
 }
 
 function promptTask(): void {
   if (inbox.length > 0) {
     //아 대박 멍청이 타스/자스에서 같다는 ==지요?
-    for (let tsk of inbox) {
-      console.log(tsk._id, tsk.bullet, tsk.aim);
+    for (let itm of inbox) {
+      console.log(itm._id, itm.bullet, itm.text);
     }
   } else {
     console.log(`There is no task any.`);
@@ -112,7 +82,7 @@ function getIndexById(id: string): number {
 }
 
 function getIndexByBody(input: string): number {
-  return inbox.findIndex((element) => element.aim === input);
+  return inbox.findIndex((element) => element.body === input);
 }
 
 function checkId(userInput: string): boolean {
@@ -149,7 +119,7 @@ function modifyItem(): void {
           type: "list",
           name: "item",
           message: "Choose item to modify",
-          choices: inbox.map((item) => item.aim), //배열 내 각 <item>마다 <item.aim>을 반환함
+          choices: inbox.map((item) => item.body), //배열 내 각 <item>마다 <item.body>을 반환함
         },
       ])
       .then((selection) => {
@@ -162,7 +132,7 @@ function modifyItem(): void {
             },
           ])
           .then((input) => {
-            inbox[idx].aim = input.content;
+            inbox[idx].body = input.content;
             exportToJson(inbox);
             console.log(`modified`);
           });
@@ -170,4 +140,14 @@ function modifyItem(): void {
   } else console.log(`inbox is empty`);
 }
 
-export { addTask, promptTask, delTask, doneTask, clearInbox, modifyItem };
+export {
+  inbox,
+  addItem,
+  promptTask,
+  delTask,
+  doneTask,
+  clearInbox,
+  modifyItem,
+  setUpInbox,
+};
+

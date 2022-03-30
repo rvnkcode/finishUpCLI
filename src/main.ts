@@ -1,4 +1,4 @@
-import { promptTask } from "./task";
+import { promptTask, setUpInbox } from "./inbox";
 
 function getToday(): string {
   const date: Date = new Date();
@@ -7,6 +7,11 @@ function getToday(): string {
 
 function main(): void {
   console.log(getToday());
+  try {
+   setUpInbox();
+  } catch (error) {
+   console.error(`Failed to get the list.`)
+  }
   promptTask();
 }
 

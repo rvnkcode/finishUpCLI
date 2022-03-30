@@ -2,7 +2,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -22,7 +26,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var commander_1 = require("commander");
 var pack = __importStar(require("../package.json"));
-var task_1 = require("./task");
+var inbox_1 = require("./inbox");
 var main_1 = require("./main");
 var program = new commander_1.Command();
 program
@@ -31,15 +35,22 @@ program
     .description(pack.description)
     .usage("<command> <argument>")
     .action(main_1.main);
-program.command("add <text>").description("add new task").action(task_1.addTask);
 program
-    .command("del <number>")
-    .description("delete task or note")
-    .action(task_1.delTask);
-program.command("done <number>").description("done task").action(task_1.doneTask);
+    .command("add <text>")
+    .option("-n, --note", "add new note instead of task", false)
+    .description("add new task or note. If you wanna type some sentence, you should put them between single quote.('')")
+    .action(inbox_1.addItem);
+program
+    .command("del <id>")
+    .description("delete item by its id")
+    .action(inbox_1.delTask);
+program
+    .command("done <id>")
+    .description("check task by its id")
+    .action(inbox_1.doneTask);
 program
     .command("clear")
     .description("clear all items in inbox")
-    .action(task_1.clearInbox);
-program.command("mod").description("modify selected item").action(task_1.modifyItem);
+    .action(inbox_1.clearInbox);
+program.command("mod").description("modify selected item").action(inbox_1.modifyItem);
 program.parse(process.argv);

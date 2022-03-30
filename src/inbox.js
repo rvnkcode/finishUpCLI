@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -19,49 +23,20 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.modifyItem = exports.clearInbox = exports.doneTask = exports.delTask = exports.promptTask = exports.addTask = void 0;
+exports.setUpInbox = exports.modifyItem = exports.clearInbox = exports.doneTask = exports.delTask = exports.promptTask = exports.addItem = exports.inbox = void 0;
 var os_1 = require("os");
 var path_1 = require("path");
 var fs_1 = require("fs");
-var main_1 = require("./main");
+var item_1 = require("./item");
 var inquirer = __importStar(require("inquirer"));
 var homeDir = (0, os_1.homedir)();
-var path = (0, path_1.normalize)(homeDir + "/documents/finishUp/todo.json");
+var path = (0, path_1.normalize)(homeDir + "/.finishUp/todo.json");
 var inbox = [];
-var Task = (function () {
-    function Task(goal) {
-        this._id = 1;
-        this.bullet = "[ ]";
-        this.aim = goal;
-        this.creationDate = (0, main_1.getToday)();
-    }
-    Object.defineProperty(Task.prototype, "id", {
-        get: function () {
-            return this._id;
-        },
-        set: function (value) {
-            var idArr = [];
-            for (var _i = 0, inbox_1 = inbox; _i < inbox_1.length; _i++) {
-                var i = inbox_1[_i];
-                idArr.push(i._id);
-            }
-            var max = Math.max.apply(Math, idArr);
-            if (max < value) {
-                this._id = value;
-            }
-            else {
-                this._id = max + 1;
-            }
-        },
-        enumerable: false,
-        configurable: true
-    });
-    return Task;
-}());
+exports.inbox = inbox;
 function checkInbox() {
     return (0, fs_1.existsSync)(path);
 }
-function getInbox() {
+function getInbox(inbox) {
     inbox = JSON.parse((0, fs_1.readFileSync)(path, "utf-8"));
     return inbox;
 }
@@ -71,11 +46,11 @@ function exportToJson(listOfTask) {
     }
     catch (error) {
         if (!checkInbox()) {
-            console.log("\uB514\uB809\uD1A0\uB9AC\uAC00 \uC874\uC7AC\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.");
+            console.log("ERROR:\uB514\uB809\uD1A0\uB9AC\uAC00 \uC874\uC7AC\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.");
         }
     }
 }
-function makeDirAndFile() {
+function makeDirAndFile(inbox) {
     try {
         (0, fs_1.mkdirSync)((0, path_1.dirname)(path));
         exportToJson(inbox);
@@ -84,28 +59,35 @@ function makeDirAndFile() {
         exportToJson(inbox);
     }
 }
-function setupInbox() {
-    if (checkInbox()) {
-        inbox = getInbox();
+function setUpInbox() {
+    if (checkInbox() == false) {
+        makeDirAndFile(inbox);
+    }
+    exports.inbox = inbox = getInbox(inbox);
+    return inbox;
+}
+exports.setUpInbox = setUpInbox;
+exports.inbox = inbox = setUpInbox();
+function addItem(userInput, isNote) {
+    var item;
+    if (isNote) {
+        item = new item_1.Note(userInput);
+        console.log(isNote);
     }
     else {
-        makeDirAndFile();
+        item = new item_1.Task(userInput);
     }
-}
-setupInbox();
-function addTask(userInput) {
-    var task = new Task(userInput);
-    task.id = inbox.length + 1;
-    inbox.push(task);
+    item.id = inbox.length + 1;
+    inbox.push(item);
     exportToJson(inbox);
-    console.log("added");
+    console.log("Item added successfully");
 }
-exports.addTask = addTask;
+exports.addItem = addItem;
 function promptTask() {
     if (inbox.length > 0) {
-        for (var _i = 0, inbox_2 = inbox; _i < inbox_2.length; _i++) {
-            var tsk = inbox_2[_i];
-            console.log(tsk._id, tsk.bullet, tsk.aim);
+        for (var _i = 0, inbox_1 = inbox; _i < inbox_1.length; _i++) {
+            var itm = inbox_1[_i];
+            console.log(itm._id, itm.bullet, itm.text);
         }
     }
     else {
@@ -117,7 +99,7 @@ function getIndexById(id) {
     return inbox.findIndex(function (element) { return element._id === parseInt(id); });
 }
 function getIndexByBody(input) {
-    return inbox.findIndex(function (element) { return element.aim === input; });
+    return inbox.findIndex(function (element) { return element.body === input; });
 }
 function checkId(userInput) {
     return getIndexById(userInput) > -1;
@@ -143,7 +125,7 @@ function doneTask(userInput) {
 }
 exports.doneTask = doneTask;
 function clearInbox() {
-    inbox = [];
+    exports.inbox = inbox = [];
     exportToJson(inbox);
     console.log("cleared");
 }
@@ -156,7 +138,7 @@ function modifyItem() {
                 type: "list",
                 name: "item",
                 message: "Choose item to modify",
-                choices: inbox.map(function (item) { return item.aim; }),
+                choices: inbox.map(function (item) { return item.body; }),
             },
         ])
             .then(function (selection) {
@@ -169,7 +151,7 @@ function modifyItem() {
                 },
             ])
                 .then(function (input) {
-                inbox[idx].aim = input.content;
+                inbox[idx].body = input.content;
                 exportToJson(inbox);
                 console.log("modified");
             });
