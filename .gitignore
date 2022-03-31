@@ -116,3 +116,4 @@ src/tempCodeRunnerFile.ts
 # test or scratch files
 src/test.js
 src/test.ts
+src/*.js
