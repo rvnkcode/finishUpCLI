@@ -112,6 +112,8 @@ src/tempCodeRunnerFile.ts
 
 # vim files
 *.swp
+*.swo
+.scratch.txt.swo
 
 # test or scratch files
 src/test.js
