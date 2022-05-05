@@ -5,75 +5,81 @@ import { Task, Note } from "./item";
 import * as inquirer from "inquirer";
 
 const homeDir: string = homedir(); //크로스플랫폼(일단 맥, 윈도우즈 대응)을 위해 normalize 사용
-let path: string = normalize(homeDir + "/.finishUp/todo.json"); //TODO:나중엔 config 파일에서 설정치를 읽어오도록 바꾸고 싶음
-let inbox: any[] = []; //todo 배열보다 나은 방법이 있는 것은 아닌지? `any`로 하는 수밖에 없음? 배열 안 오브젝트 요소에 액세스하려면??왜??
+const path: string = normalize(homeDir + "/.finishUp/todo.json"); //TODO:나중엔 config 파일에서 설정치를 읽어오도록 바꾸고 싶음
+let home: any[] = []; //TODO: 배열보다 나은 방법이 있는 것은 아닌지? `any`로 하는 수밖에 없음? 배열 안 오브젝트 요소에 액세스하려면??왜??
+let inbox: any[] = [];
+
+home.push(inbox);
 
 // dealing with inbox
-function checkInbox(): boolean {
-  return existsSync(path);
-}
+// function checkInbox(): boolean {
+//   return existsSync(path);
+// }
 
-function getInbox(inbox: any) {
-  inbox = JSON.parse(readFileSync(path, "utf-8"));
-  return inbox;
+function getField(home: any) {
+  home = JSON.parse(readFileSync(path, "utf-8"));
+  return home;
 }
 
 function exportToJson(listOfTask: any): void {
   try {
     writeFileSync(path, JSON.stringify(listOfTask, null, 2));
   } catch (error) {
-    if (!checkInbox()) {
+    if (!existsSync(path)) {
       console.log(`ERROR:디렉토리가 존재하지 않습니다.`);
     }
   }
 }
 
-function makeDirAndFile(inbox: any) {
+function makeDirAndFile(home: any) {
   try {
     mkdirSync(dirname(path));
-    exportToJson(inbox);
+    exportToJson(home);
   } catch (error) {
-    exportToJson(inbox);
+    exportToJson(home);
   }
 }
 
-function setUpInbox(): any {
-  if (checkInbox() == false) {
-    makeDirAndFile(inbox);
+function setUpField(): any {
+  if (!existsSync(path)) {
+    //경로에 파일이 존재하지 않을 경우
+    makeDirAndFile(home);
   }
-  inbox = getInbox(inbox);
-  return inbox;
+  home = getField(home);
+  return home;
 }
+
+home = setUpField(); // inbox 초기화
 
 function clearInbox(): void {
-  inbox = [];
-  exportToJson(inbox);
+  // inbox = [];
+  home[0] = []; //home[0] = inbox;
+  exportToJson(home);
   console.log(`cleared`);
 }
-
-inbox = setUpInbox(); // inbox 초기화
 
 //dealing with item(task or not: method for everything)
 function addItem(userInput: string, isNote?: boolean): void {
   let item: any;
   if (isNote) {
     item = new Note(userInput);
-    console.log(`note!`);
+    console.log(`add note`);
   } else {
     item = new Task(userInput);
-    console.log(`task!`);
+    console.log(`add task!`);
   }
-  item.id = inbox.length + 1;
-  inbox.push(item);
-  exportToJson(inbox);
+  item.id = home[0].length + 1;
+  item.project = `inbox`;
+  home[0].push(item);
+  exportToJson(home);
   console.log(`Item added successfully`);
 }
 
 function promptItem(): void {
-  if (inbox.length > 0) {
+  if (home[0].length > 0) {
     //아 대박 멍청이 타스/자스에서 같다는 ==지요?
-    for (let itm of inbox) {
-      console.log(itm._id, itm.bullet, itm.text);
+    for (let itm of home[0]) {
+      console.log(itm._id, itm.status, itm.text);
     }
   } else {
     console.log(`There is no task any.`);
@@ -81,11 +87,11 @@ function promptItem(): void {
 }
 
 function getIndexById(id: string): number {
-  return inbox.findIndex((element) => element._id === parseInt(id));
+  return home[0].findIndex((element: any) => element._id === parseInt(id));
 }
 
 function getIndexByBody(input: string): number {
-  return inbox.findIndex((element) => element.body === input);
+  return home[0].findIndex((element: any) => element.body === input);
 }
 
 function checkId(id: number): boolean {
@@ -93,23 +99,23 @@ function checkId(id: number): boolean {
 }
 
 function delItem(userInput: string): void {
-  let id = getIndexById(userInput)
+  let id = getIndexById(userInput);
   if (checkId(id)) {
-    inbox.splice(id, 1); //id 번부터 '1'개를 지움
-    exportToJson(inbox);
+    home[0].splice(id, 1); //id 번부터 '1'개를 지움
+    exportToJson(home);
     console.log(`deleted`);
   } else console.log(`ERROR`);
 }
 
 function modifyItem(): void {
-  if (inbox.length > 0) {
+  if (home[0].length > 0) {
     inquirer
       .prompt([
         {
           type: "list",
           name: "item",
           message: "Choose item to modify",
-          choices: inbox.map((item) => item.body), //배열 내 각 <item>마다 <item.body>을 반환함
+          choices: home[0].map((item: any) => item.body), //배열 내 각 <item>마다 <item.body>을 반환함
         },
       ])
       .then((selection) => {
@@ -122,8 +128,8 @@ function modifyItem(): void {
             },
           ])
           .then((input) => {
-            inbox[idx].body = input.content;
-            exportToJson(inbox);
+            home[0][idx].body = input.content;
+            exportToJson(home);
             console.log(`modified`);
           });
       });
@@ -132,13 +138,13 @@ function modifyItem(): void {
 
 // for task only
 function isTask(id: number): boolean {
-  if (inbox[id].bullet != `[-]`) {
+  if (home[0][id].status != `[-]`) {
     //if (inbox[id].constructor.name == `Task`) { // it returns `object`
     return true;
   } else return false;
 }
 
-function isExistTask(id: number):boolean {
+function isExistTask(id: number): boolean {
   if (checkId(id) && isTask(id)) {
     return true;
   } else return false;
@@ -147,8 +153,7 @@ function isExistTask(id: number):boolean {
 function doTask(userInput: string): void {
   let id: number = getIndexById(userInput);
   if (isExistTask(id)) {
-    inbox[id].bullet = `[>]`;
-    exportToJson(inbox);
+    home[0][id].status = `[>]`;
     console.log(`checked`);
   } else console.error(`ERROR`);
 }
@@ -156,11 +161,12 @@ function doTask(userInput: string): void {
 function doneTask(userInput: string): void {
   let id: number = getIndexById(userInput);
   if (isExistTask(id)) {
-    inbox[id].bullet = `[X]`;
-    exportToJson(inbox);
+    home[0][id].status = `[X]`;
+    exportToJson(home);
     console.log(`checked`);
   } else console.error(`ERROR`);
 }
+
 
 // function testfn(id: string): void {
 //   console.log(inbox[getIndexById(id)].constructor.name);
@@ -168,13 +174,14 @@ function doneTask(userInput: string): void {
 
 export {
   inbox,
+  home,
   addItem,
   promptItem,
   delItem,
   doneTask,
   clearInbox,
   modifyItem,
-  setUpInbox,
-  doTask
+  setUpField,
+  doTask,
   //  testfn,
 };

@@ -28,7 +28,7 @@ program
   .argument(`<text>`, `add new items to inbox.`)
   .option(`-n, --note`, `add new note instead of task`)
   .description(
-    `add new task or note. If you wanna type some sentence, you should put them between single quote.('')`
+    `add new task or note. You should put them between single or double quote.('')`
   )
   //.action(addItem);
   .action((text, options) => {
