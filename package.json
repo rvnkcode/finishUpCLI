@@ -2,15 +2,11 @@
   "name": "finish-up",
   "version": "0.1.0",
   "description": "A CLI task manager based on node.js",
-  "main": "./src/index.js",
-  "bin": {
-    "fu": "./src/cli.js"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "melonK",
+  "author": "KSY",
   "license": "MIT",
   "dependencies": {
     "chalk": "^5.0.0",

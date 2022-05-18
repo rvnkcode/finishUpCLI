@@ -107,7 +107,7 @@ dist
 .idea
 /package-lock.json
 node_modules
-src/tempCodeRunnerFile.ts
+bk/tempCodeRunnerFile.ts
 .vscode
 
 # vim files
@@ -116,6 +116,7 @@ src/tempCodeRunnerFile.ts
 .scratch.txt.swo
 
 # test or scratch files
-src/test.js
-src/test.ts
+bk/test.js
+bk/test.ts
 src/*.js
+/bk/
