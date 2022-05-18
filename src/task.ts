@@ -46,35 +46,7 @@ class Task implements Item {
     this.setPriority(words);
     this.setCompletionDate(words);
     this.setCreationDate(words);
-
-    let project: string[] = [];
-    let context: string[] = [];
-    let field: Array<[string, string]> = [];
-
-    for (const word of words.filter((item: string) => item.length > 1)) {
-      switch (word[0]) {
-        case `+`:
-          project.push(word);
-          words.splice(words.indexOf(word), 1);
-          break;
-        case `@`:
-          context.push(word);
-          words.splice(words.indexOf(word), 1);
-          break;
-        default: {
-          let index: number = word.indexOf(`:`);
-          if (index > 0 && index < word.length - 1) {
-            field.push([word.slice(0, index), word.slice(index + 1)]);
-          }
-          words.splice(words.indexOf(word), 1);
-        }
-      }
-    }
-
-    this.project = project;
-    this.context = context;
-    this.fields = field;
-    this.body = words.join(` `);
+    this.setDescriptionPart(words);
   }
 
   setMarkAndDone(words: string[]): void {
@@ -117,6 +89,45 @@ class Task implements Item {
       return new Date(text);
     }
     return null;
+  }
+
+  setDescriptionPart(words: string[]): void {
+    let project: string[] = [];
+    let context: string[] = [];
+    let field: Array<[string, string]> = [];
+    let indexOfFlag: number[] = [];
+
+    words.forEach((word: string) => {
+      switch (word[0]) {
+        case `+`:
+          project.push(word);
+          indexOfFlag.push(words.indexOf(word));
+          break;
+        case `@`:
+          context.push(word);
+          indexOfFlag.push(words.indexOf(word));
+          break;
+        default: {
+          let index: number = word.indexOf(`:`);
+          if (index > 0 && index < word.length - 1) {
+            field.push([word.slice(0, index), word.slice(index + 1)]);
+            indexOfFlag.push(words.indexOf(word));
+          }
+        }
+      }
+    });
+
+    //앞에서부터 배열 요소를 지우면 배열이 어그러져 인덱스가 바뀌기 때문에 배열 뒷자리(높은 수의 인덱스)부터 지우도록 처리
+    indexOfFlag.reverse();
+    // body 에 task 내용만 남기도록 +, @, : 등이 포함된 요소 삭제
+    indexOfFlag.forEach((indexNumber: number) => {
+      words.splice(indexNumber, 1);
+    });
+
+    this.project = project;
+    this.context = context;
+    this.fields = field;
+    this.body = words.join(` `);
   }
 }
 

@@ -9,7 +9,7 @@ const entireText: string = readFileSync(
   "utf-8"
 ).trim();
 const textLines: string[] = entireText.split(`\n`);
-let indexList: Set<number> = new Set();
+const indexList: Set<number> = new Set();
 
 textLines.forEach((line: string) => {
   let task: Task = new Task(line.trim());
