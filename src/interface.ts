@@ -9,7 +9,6 @@ interface Item {
   body: string;
   project?: string[];
   context?: string[];
-  dueDate?: Date;
   //fields?: Array<[string, string]>;
   fields?: { [key: string]: string };
   rawData: string;
