@@ -8,6 +8,9 @@
   "keywords": [],
   "author": "KSY",
   "license": "MIT",
+  "bin": {
+    "fu": "./src/cli.js"
+  },
   "dependencies": {
     "chalk": "^5.0.0",
     "commander": "^9.0.0",

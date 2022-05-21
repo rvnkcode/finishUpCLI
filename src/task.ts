@@ -1,6 +1,6 @@
 import { Item } from "./interface";
 import { Priority, Bullet } from "./types";
-import { indexList } from "./parser";
+import { indexList } from "./inbox";
 
 class Task implements Item {
   get index(): number {
