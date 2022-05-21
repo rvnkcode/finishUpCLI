@@ -4,14 +4,6 @@
 
 import { Command } from "commander";
 import * as pack from "../package.json";
-import {
-  addItem,
-  clearInbox,
-  delItem,
-  doTask,
-  doneTask,
-  modifyItem,
-} from "./inbox";
 import { main } from "./main";
 
 const program: Command = new Command();
@@ -23,41 +15,40 @@ program
   .usage(`<command> <argument>`)
   .action(main);
 
-program
-  .command(`add`)
-  .argument(`<text>`, `add new items to inbox.`)
-  .option(`-n, --note`, `add new note instead of task`)
-  .description(
-    `add new task or note. You should put them between single or double quote.('')`
-  )
-  //.action(addItem);
-  .action((text, options) => {
-    if (options.note) {
-      addItem(text, true);
-    } else {
-      addItem(text, false);
-    }
-  });
+//program
+//  .command(`add`)
+//  .argument(`<text>`, `add new items to inbox.`)
+//  .description(
+//    `add new task or note. You should put them between single or double quote.('')`
+//  )
+//  //.action(addItem);
+//  .action((text, options) => {
+//    if (options.note) {
+//      addItem(text, true);
+//    } else {
+//      addItem(text, false);
+//    }
+//  });
 
-program
-  .command(`del <id>`)
-  .description(`delete item by its id`)
-  .action(delItem);
+//program
+//  .command(`del <id>`)
+//  .description(`delete item by its id`)
+//  .action(delItem);
 
-program.command(`do <id>`).description(`check task by its id`).action(doTask);
+//program.command(`do <id>`).description(`check task by its id`).action(doTask);
 
-program
-  .command(`done <id>`)
-  .description(`check task by its id`)
-  .action(doneTask);
+//program
+//  .command(`done <id>`)
+//  .description(`check task by its id`)
+//  .action(doneTask);
 
-program
-  .command(`clear`)
-  .description(`clear all items in inbox`)
-  .action(clearInbox);
+//program
+//  .command(`clear`)
+//  .description(`clear all items in inbox`)
+//  .action(clearInbox);
 
-//TODO: mod <id>로 id를 넣으면 해당 아이템을 수정하게 했으면 좋겠고 아니면 선택형으로 대화형 프롬포트가 나왔으면 좋겠음
-program.command(`mod`).description(`modify selected item`).action(modifyItem);
+////TODO: mod <id>로 id를 넣으면 해당 아이템을 수정하게 했으면 좋겠고 아니면 선택형으로 대화형 프롬포트가 나왔으면 좋겠음
+//program.command(`mod`).description(`modify selected item`).action(modifyItem);
 
 // program
 //   .command(`t <id>`)

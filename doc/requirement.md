@@ -1,12 +1,13 @@
 # Requirements and roadmap
 
-CLI > TUI(can be skipped) > WEB > Mobile application  
+CLI > TUI(can skip) > Web > mobile application  
 
 - [ ] parse todo.txt
-- [ ] prompt
+- [ ] prompt tasks
 - [ ] CRUD on CLI
   - [ ] interact with user
 - [ ] save to todo.txt
+- [ ] archive completed tasks to done.txt
 - [ ] sort list by
   - [ ] priority
   - [ ] urgent
