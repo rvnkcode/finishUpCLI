@@ -9,6 +9,8 @@ const entireText: string = readFileSync(
   "utf-8"
 ).trim();
 const textLines: string[] = entireText.split(`\n`);
+
+// inbox?
 const indexList: Set<number> = new Set();
 
 textLines.forEach((line: string) => {
@@ -18,6 +20,7 @@ textLines.forEach((line: string) => {
   todoList.push(task);
 });
 
+// prompt
 todoList.forEach((task: Task) => {
   console.log(task.index + ` ` + task.mark + task.body);
 });

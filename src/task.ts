@@ -21,11 +21,14 @@ class Task implements Item {
   body: string;
   project?: string[];
   context?: string[];
-  dueDate?: Date;
-  /*fields 를 필수로 지정하지 않으면 fields 의 타입이 Array<string> 혹은 undefined 가 되기 때문에
-   해당 타입을 쓰는 프로퍼티는 반드시 필수 프로퍼티로 지정해줘야만 한다. */
-  fields?: Array<[string, string]>;
+  /*fields 를 필수로 지정하지 않으면 fields 의 타입이 여기서 지정해 준 타입 혹은 undefined 가 되기 때문에
+   해당 타입을 쓰는 프로퍼티는 반드시 필수 프로퍼티로 지정해줘야만 한다.
+    object is possibly `undefined` 에러 발생!*/
+  //fields?: Array<[string, string]>;
+  fields: { [key: string]: string };
   rawData: string;
+  dueDate?: Date;
+  startDate?: Date;
 
   constructor(line: string) {
     this._index = 1;
@@ -33,6 +36,7 @@ class Task implements Item {
     this.isDone = false;
     this.body = ``;
     this.rawData = line;
+    this.fields = {};
     this.allocateProperties(line);
   }
 
@@ -47,6 +51,21 @@ class Task implements Item {
     this.setCompletionDate(words);
     this.setCreationDate(words);
     this.setDescriptionPart(words);
+    if (this.fields.hasOwnProperty(`due`)) {
+      this.setDueDate(this.fields.due);
+    }
+    for (let key in this.fields) {
+      switch (key) {
+        case `due`:
+          this.setDueDate(this.fields.due);
+          break;
+        case `start`:
+          this.setStartDate(this.fields.start);
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   setMarkAndDone(words: string[]): void {
@@ -94,7 +113,7 @@ class Task implements Item {
   setDescriptionPart(words: string[]): void {
     let project: string[] = [];
     let context: string[] = [];
-    let field: Array<[string, string]> = [];
+    let field: { [key: string]: string } = {};
     let indexOfFlag: number[] = [];
 
     words.forEach((word: string) => {
@@ -110,7 +129,9 @@ class Task implements Item {
         default: {
           let index: number = word.indexOf(`:`);
           if (index > 0 && index < word.length - 1) {
-            field.push([word.slice(0, index), word.slice(index + 1)]);
+            //field.push([word.slice(0, index), word.slice(index + 1)]);
+            let key: string = word.slice(0, index);
+            field[key] = word.slice(index + 1);
             indexOfFlag.push(words.indexOf(word));
           }
         }
@@ -128,6 +149,21 @@ class Task implements Item {
     this.context = context;
     this.fields = field;
     this.body = words.join(` `);
+  }
+
+  setDueDate(text: string): void {
+    //if (`due` in this.fields) { in은 오브젝트의 프로토타입까지 거슬러 올라가기 때문에
+    const dueDate: Date | null = this.isDate(text);
+    if (dueDate) {
+      this.dueDate = dueDate;
+    }
+  }
+
+  setStartDate(text: string): void {
+    const startDate: Date | null = this.isDate(text);
+    if (startDate) {
+      this.startDate = startDate;
+    }
   }
 }
 
