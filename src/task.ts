@@ -17,7 +17,7 @@ class Task implements Item {
   isDone: boolean;
   priority?: Priority;
   completionDate?: Date;
-  creationDate?: Date;
+  creationDate: Date;
   body: string;
   project?: string[];
   context?: string[];
@@ -34,6 +34,7 @@ class Task implements Item {
     this._index = 1;
     this.mark = `[ ]`;
     this.isDone = false;
+    this.creationDate = new Date();
     this.body = ``;
     this.rawData = line;
     this.fields = {};
