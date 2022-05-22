@@ -8,8 +8,13 @@ class Task implements Item {
   }
 
   set index(value: number) {
-    const maxIndex: number = Math.max(...Array.from(indexList));
-    maxIndex < value ? (this._index = value) : (this._index = maxIndex + 1);
+    if (this.fields.hasOwnProperty(`id`)) {
+      this._index = +this.fields.id;
+    } else {
+      const maxIndex: number = Math.max(...Array.from(indexList));
+      maxIndex < value ? (this._index = value) : (this._index = maxIndex + 1);
+      this.fields.id = this._index.toString();
+    }
   }
   //Property
   private _index: number;
@@ -17,7 +22,7 @@ class Task implements Item {
   isDone: boolean;
   priority?: Priority;
   completionDate?: Date;
-  creationDate: Date;
+  creationDate?: Date;
   body: string;
   project?: string[];
   context?: string[];
@@ -34,7 +39,6 @@ class Task implements Item {
     this._index = 1;
     this.mark = `[ ]`;
     this.isDone = false;
-    this.creationDate = new Date();
     this.body = ``;
     this.rawData = line;
     this.fields = {};
@@ -52,9 +56,6 @@ class Task implements Item {
     this.setCompletionDate(words);
     this.setCreationDate(words);
     this.setDescriptionPart(words);
-    if (this.fields.hasOwnProperty(`due`)) {
-      this.setDueDate(this.fields.due);
-    }
     for (let key in this.fields) {
       switch (key) {
         case `due`:
@@ -63,10 +64,14 @@ class Task implements Item {
         case `start`:
           this.setStartDate(this.fields.start);
           break;
+        case `id`:
+          this._index = +this.fields.id;
+          break;
         default:
           break;
       }
     }
+    this.updateRawData();
   }
 
   setMarkAndDone(words: string[]): void {
@@ -99,6 +104,8 @@ class Task implements Item {
     if (creationDate) {
       this.creationDate = creationDate;
       words.shift();
+    } else {
+      this.creationDate = new Date();
     }
   }
 
@@ -165,6 +172,39 @@ class Task implements Item {
     if (startDate) {
       this.startDate = startDate;
     }
+  }
+
+  updateRawData(): void {
+    let temp: string[] = [];
+    if (this.isDone) {
+      temp.push(`x`);
+    }
+    if (this.priority) {
+      temp.push(this.priority);
+    }
+    if (this.completionDate) {
+      temp.push(this.completionDate.toISOString().split(`T`)[0]);
+    }
+    if (this.creationDate) {
+      temp.push(this.creationDate.toISOString().split(`T`)[0]);
+    }
+    temp.push(this.body);
+    if (this.project) {
+      this.project.forEach((v: string) => {
+        temp.push(v);
+      });
+    }
+    if (this.context) {
+      this.context.forEach((v: string) => {
+        temp.push(v);
+      });
+    }
+    if (Object.keys(this.fields).length > 0) {
+      for (const [key, value] of Object.entries(this.fields)) {
+        temp.push(`${key}:${value}`);
+      }
+    }
+    this.rawData = temp.join(` `);
   }
 }
 

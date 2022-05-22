@@ -1,16 +1,26 @@
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import { normalize } from "path";
 import { homedir } from "os";
+import { Task } from "./task";
 
-const entireText: string = readFileSync(
-  normalize(homedir() + "/.todo/todo.txt"),
+const path: string = `/.todo/todo.txt`;
+let entireText: string = readFileSync(
+  normalize(homedir() + path),
   "utf-8"
 ).trim();
-const textLines: string[] = entireText.split(`\n`);
+let textLines: string[] = [];
 
-// prompt
-// todoList.forEach((task: Task) => {
-//   console.log(task.index + ` ` + task.mark + task.body);
-// });
+if (entireText.length > 0) {
+  textLines = entireText.split(`\n`);
+}
 
-export { textLines };
+function saveToToDoTxt(todoList: Task[]): void {
+  textLines = [];
+  todoList.forEach((task) => {
+    textLines.push(task.rawData);
+  });
+  entireText = textLines.join(`\n`);
+  writeFileSync(homedir() + path, entireText, `utf-8`);
+}
+
+export { textLines, saveToToDoTxt };

@@ -5,6 +5,7 @@
 import { Command } from "commander";
 import * as pack from "../package.json";
 import { main } from "./main";
+import { addItem, clearAll, delItem } from "./inbox";
 
 const program: Command = new Command();
 
@@ -15,25 +16,21 @@ program
   .usage(`<command> <argument>`)
   .action(main);
 
-//program
-//  .command(`add`)
-//  .argument(`<text>`, `add new items to inbox.`)
-//  .description(
-//    `add new task or note. You should put them between single or double quote.('')`
-//  )
-//  //.action(addItem);
-//  .action((text, options) => {
-//    if (options.note) {
-//      addItem(text, true);
-//    } else {
-//      addItem(text, false);
-//    }
-//  });
+program
+  .command(`add`)
+  .argument(`<text>`, `add new task to inbox.`)
+  .description(
+    `add new task. You should put them between single or double quote.(''). The format of input text must be todo.txt format.`
+  )
+  .action((input) => {
+    addItem(input);
+    console.log(`Task added successfully.`);
+  });
 
-//program
-//  .command(`del <id>`)
-//  .description(`delete item by its id`)
-//  .action(delItem);
+program
+  .command(`del <id>`)
+  .description(`delete item by its index.`)
+  .action(delItem);
 
 //program.command(`do <id>`).description(`check task by its id`).action(doTask);
 
@@ -42,16 +39,18 @@ program
 //  .description(`check task by its id`)
 //  .action(doneTask);
 
-//program
-//  .command(`clear`)
-//  .description(`clear all items in inbox`)
-//  .action(clearInbox);
+program
+  .command(`clear`)
+  .description(`clear all items in inbox`)
+  .action(clearAll);
 
-////TODO: mod <id>로 id를 넣으면 해당 아이템을 수정하게 했으면 좋겠고 아니면 선택형으로 대화형 프롬포트가 나왔으면 좋겠음
 //program.command(`mod`).description(`modify selected item`).action(modifyItem);
 
-// program
-//   .command(`t <id>`)
-//   .action(testfn);
-
 program.parse(process.argv);
+
+//debug
+/*
+main();
+delItem(`6`);
+main();
+*/
