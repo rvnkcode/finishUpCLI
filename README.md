@@ -10,21 +10,25 @@ CLI > TUI(can be skipped) > Web > mobile application
 - [ ] parse json configuration: .todo.config.json
 - [ ] if config file does not exists, create ~/.finishUp/todo.txt
   - [ ] interact with user
-    - [ ] path of todo.txt and other files eg. done.txt, trash.txt, dump.txt
+    - [ ] path of todo.txt and other files e.g. done.txt, trash.txt, dump.txt
     - [ ] completed tasks option: move to done.txt immediately? or once in a day? or just remove? or manually?
     - [ ] urgent left til due date setting. week? 5days? 3days?
     - [ ] hide dump/wait property?
+    - [ ] automatically set the creation date property true/false
 - [x] parse todo.txt
 - [ ] if todo.txt does not exists, create ~/.finishUp/todo.txt  
   *how to handle dump.txt?*
 - [ ] CRUD on CLI
-  - [ ] C: add command. add `<text>` input form is todo.txt.
+  - [ ] C
+    - [x] add command. add `<text>` input form is todo.txt.
+      - [x] it will be set creationDate to today by its default if input text doesn't have any creationDate property
+    - [ ] import command. import `<path>` imports another todo.txt file and merge with current todo.txt file
   - [ ] R: prompt task.(CLI ver.)
     - [x] prompt tasks: default option is based on text file's order.
     - [ ] and prompt only today's task. hide dump/wait property by default.
     - [ ] show command. show `<option>`
       - [ ] -d show dump: tasks that start date property has not set.
-      - [ ] -w show wait: tasks that has wait property.
+      - [ ] -w show wait: tasks that have wait property.
     - [ ] sort command. sort `<option>`
       - [ ] -p sort(group) by project.
       - [ ] -c context
@@ -45,7 +49,9 @@ CLI > TUI(can be skipped) > Web > mobile application
     - [ ] due command. due `<id>` `<text yyyy-MM-dd>` set due date to input date.
       - [ ] this command trigger isUrgent property.
     - [ ] done command. done `<id>` set mark, isDone, completion date.
-  - [ ] D: del command. del `<id>`
-    - [ ] does user want trash.txt?
+  - [ ] D
+    - [x] del command. del `<id>`
+      - [ ] does user want trash.txt?
+    - [x] clear command. clear all tasks
 - [ ] save to todo.txt
 - [ ] export to JSON
