@@ -24,8 +24,8 @@ class Task implements Item {
   completionDate?: Date;
   creationDate?: Date;
   body: string;
-  project?: string[];
-  context?: string[];
+  project: string[];
+  context: string[];
   /*fields 를 필수로 지정하지 않으면 fields 의 타입이 여기서 지정해 준 타입 혹은 undefined 가 되기 때문에
    해당 타입을 쓰는 프로퍼티는 반드시 필수 프로퍼티로 지정해줘야만 한다.
     object is possibly `undefined` 에러 발생!*/
@@ -34,12 +34,15 @@ class Task implements Item {
   rawData: string;
   dueDate?: Date;
   startDate?: Date;
+  urgent?: number;
 
   constructor(line: string) {
     this._index = 1;
     this.mark = `[ ]`;
     this.isDone = false;
     this.body = ``;
+    this.project = [];
+    this.context = [];
     this.rawData = line;
     this.fields = {};
     this.allocateProperties(line);

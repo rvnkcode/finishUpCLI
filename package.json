@@ -1,7 +1,7 @@
 {
   "name": "finish-up",
   "version": "0.1.0",
-  "description": "A CLI task manager based on node.js",
+  "description": "A CLI task manager based on todo.txt.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

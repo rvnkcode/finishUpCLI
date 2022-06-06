@@ -1,17 +1,9 @@
 import { Task } from "./task";
 import { textLines, saveToToDoTxt } from "./parser";
+//import * as inquirer from "inquirer";
 
 let todoList: Task[] = [];
 const indexList: Set<number> = new Set();
-//const date: Date = new Date();
-// const tempBackup: string[] = textLines;
-
-// textLines.forEach((line: string) => {
-//   let task: Task = new Task(line.trim());
-//   task.index = todoList.length + 1;
-//   indexList.add(task.index);
-//   todoList.push(task);
-// });
 
 textLines.forEach((line: string) => {
   addItem(line);
@@ -45,13 +37,48 @@ function delItem(input: string): void {
     todoList.splice(id, 1); //id 번부터 '1'개를 지움
     saveToToDoTxt(todoList);
     console.log(`Deleted.`);
-  } else console.log(`ERROR`);
+  } else console.log(`ID doesn't exist in your To Do List. Pleas check again.`);
 }
 
-// function reloadToDoList(): void {
-//   todoList.forEach((task) => {
-//     task.updateRawData();
-//   });
-// }
+function modifyEntireItem(idInput: string, text: string): void {
+  let id = getIndexById(idInput);
+  if (checkId(id)) {
+    todoList[id].allocateProperties(text);
+    saveToToDoTxt(todoList);
+    console.log(`Task is modified successfully.`);
+  } else console.log(`ID doesn't exist in your To Do List. Pleas check again.`);
+}
 
-export { todoList, indexList, addItem, clearAll, delItem };
+function filterDueItem(): Task[] {
+  const list: Task[] = todoList.filter((task: Task) => {
+    return task.dueDate;
+  });
+  sortByDue(list);
+  return list;
+}
+
+function sortByDue(list?: Task[]): Task[] {
+  let l: Task[] = todoList;
+
+  if (list) {
+    l = list;
+  }
+
+  l.sort((a, b) => {
+    if (a.dueDate && b.dueDate) {
+      return a.dueDate.valueOf() - b.dueDate.valueOf();
+    } else return 0;
+  });
+  return l;
+}
+
+export {
+  todoList,
+  indexList,
+  addItem,
+  clearAll,
+  delItem,
+  modifyEntireItem,
+  filterDueItem,
+  sortByDue
+};

@@ -4,8 +4,14 @@
 
 import { Command } from "commander";
 import * as pack from "../package.json";
-import { main } from "./main";
-import { addItem, clearAll, delItem } from "./inbox";
+import { main, promptTask } from "./main";
+import {
+  addItem,
+  clearAll,
+  delItem,
+  modifyEntireItem,
+  filterDueItem,
+} from "./inbox";
 
 const program: Command = new Command();
 
@@ -14,11 +20,14 @@ program
   .name(`fu`)
   .description(pack.description)
   .usage(`<command> <argument>`)
-  .action(main);
+  .option(`-d, --dump`, ``, false)
+  .option(`-w, --wait`, ``, false)
+  .action((options) => {
+    main(options);
+  });
 
 program
-  .command(`add`)
-  .argument(`<text>`, `add new task to inbox.`)
+  .command(`add <text>`)
   .description(
     `add new task. You should put them between single or double quote.(''). The format of input text must be todo.txt format.`
   )
@@ -28,9 +37,36 @@ program
   });
 
 program
+  .command(`due`)
+  .description(`prompt task that has due date.`)
+  .action(() => {
+    promptTask(filterDueItem());
+  });
+
+program
   .command(`del <id>`)
   .description(`delete item by its index.`)
   .action(delItem);
+
+program
+  .command(`clear`)
+  .description(`clear all items in inbox`)
+  .action(clearAll);
+
+program
+  .command(`mod`)
+  .description(
+    `modify task by it's id. The format of input text must be todo.txt format.`
+  )
+  .argument(`<id>`, `id of modify task`)
+  .argument(
+    `<text>`,
+    `The format of input text must be todo.txt format if command does not have any option.`
+  )
+  .action(modifyEntireItem);
+
+program.command(`set`).requiredOption(`-d, --due`);
+//.action(fn)
 
 //program.command(`do <id>`).description(`check task by its id`).action(doTask);
 
@@ -39,18 +75,7 @@ program
 //  .description(`check task by its id`)
 //  .action(doneTask);
 
-program
-  .command(`clear`)
-  .description(`clear all items in inbox`)
-  .action(clearAll);
-
-//program.command(`mod`).description(`modify selected item`).action(modifyItem);
-
 program.parse(process.argv);
 
 //debug
-/*
-main();
-delItem(`6`);
-main();
-*/
+//main();
